@@ -71,7 +71,8 @@ input[type=date]{color-scheme:dark}
 .stack{position:relative}
 .wcard{position:absolute;left:0;right:0;height:162px;border-radius:13px;padding:12px 15px;overflow:hidden;
   box-shadow:0 -8px 18px rgba(0,0,0,.5),inset 0 0 0 1px rgba(230,232,235,.14),inset 0 1px 0 rgba(255,255,255,.12);
-  transition:top .28s cubic-bezier(.2,.8,.2,1);text-align:left;width:100%;display:block}
+  transition:top .28s cubic-bezier(.2,.8,.2,1);cursor:pointer;outline-offset:2px}
+.wcard:focus-visible{outline:2px solid var(--silver-hi)}
 .wcard::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.06) 48%,transparent 62%);pointer-events:none}
 .wcard .stripe{position:absolute;left:0;top:0;bottom:0;width:3px}
 .wtop{position:relative;display:flex;justify-content:space-between;align-items:center;gap:8px}
@@ -370,7 +371,8 @@ label.f{display:block;font-size:11px;letter-spacing:.12em;text-transform:upperca
       order.forEach((c, i) => {
         const front = c.id === frontId, v = spent[c.id] || 0, l = c.limit - v, pct = c.limit ? Math.min(100, Math.round(v / c.limit * 100)) : 0;
         const [a, b] = CARD_SHADES[Math.min(i, CARD_SHADES.length - 1)];
-        const card = mk('button', 'wcard'); card.type = 'button'; card.style.top = (i * STEP) + 'px'; card.style.background = `linear-gradient(140deg,${a},${b})`;
+        const card = mk('div', 'wcard'); card.setAttribute('role', 'button'); card.tabIndex = 0; card.style.top = (i * STEP) + 'px';
+        card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); } }); card.style.background = `linear-gradient(140deg,${a},${b})`;
         card.setAttribute('aria-label', `${c.name}: ${inr(l)} left of ${inr(c.limit)}`);
         const stripe = mk('div', 'stripe'); stripe.style.background = c.color;
         const top = mk('div', 'wtop'); top.append(mk('span', 'wname plate metal', c.name));

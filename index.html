@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Ebony Purse</title>
+<title>Wallet</title>
 <meta name="theme-color" content="#1f1a17">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Purse">
+<meta name="apple-mobile-web-app-title" content="Wallet">
 <meta name="robots" content="noindex">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -162,7 +162,7 @@ label.f{display:block;font-size:11px;letter-spacing:.12em;text-transform:upperca
 <main class="app" id="app">
   <div class="head">
     <button class="nav" id="prev" aria-label="Previous month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg></button>
-    <div class="title-plate plate metal" id="month-plate">November Purse</div>
+    <div class="title-plate plate metal" id="month-plate">November Wallet</div>
     <div style="display:flex">
       <button class="nav" id="next" aria-label="Next month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></button>
     </div>
@@ -211,7 +211,7 @@ label.f{display:block;font-size:11px;letter-spacing:.12em;text-transform:upperca
     <div class="impact" id="impact" aria-live="polite"></div>
     <div class="keypad" id="keypad"></div>
     <div class="err" id="add-err" role="alert"></div>
-    <button type="submit" class="btn-metal metal" id="save-btn">Drop in the Purse</button>
+    <button type="submit" class="btn-metal metal" id="save-btn">Drop in the Wallet</button>
     <button type="button" class="btn-danger" id="del-exp" hidden>Delete this expense</button>
   </form>
 </div>
@@ -349,7 +349,7 @@ label.f{display:block;font-size:11px;letter-spacing:.12em;text-transform:upperca
   let frontId = null;
   const chipSvg = `<svg width="28" height="21" viewBox="0 0 30 23" aria-hidden="true"><defs><linearGradient id="chipg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e6e8eb"/><stop offset="1" stop-color="#9a9fa6"/></linearGradient></defs><rect x=".5" y=".5" width="29" height="22" rx="4" fill="url(#chipg)"/><path d="M10 .5v22M20 .5v22M.5 8h9.5M20 8h9.5M.5 15h9.5M20 15h9.5M10 11.5h10" stroke="#1f1a17" stroke-opacity=".45" stroke-width=".5" fill="none"/></svg>`;
   function render() {
-    $('month-plate').textContent = MONTHS[view.getMonth()] + ' Purse' + (view.getFullYear() !== new Date().getFullYear() ? ' ' + view.getFullYear() : '');
+    $('month-plate').textContent = MONTHS[view.getMonth()] + ' Wallet' + (view.getFullYear() !== new Date().getFullYear() ? ' ' + view.getFullYear() : '');
     const list = monthTx(), spent = spentBy(list), total = list.reduce((a, t) => a + t.amt, 0), left = state.budget - total, dl = daysLeft();
     $('bal-label').textContent = left < 0 ? 'Over budget by' : 'Left to spend';
     $('bal-num').textContent = inr(Math.abs(left)); $('bal-num').style.color = left < 0 ? 'var(--warn)' : '';
@@ -446,7 +446,7 @@ label.f{display:block;font-size:11px;letter-spacing:.12em;text-transform:upperca
       const before = c.limit - (spent[c.id] || 0), after = before - a;
       const l1 = mk('div'); l1.append(c.name + ' ' + inr(before) + ' → '); const s1 = mk('span', null, inr(after)); s1.style.color = after < 0 ? 'var(--warn)' : 'var(--txt)'; l1.append(s1); if (after < 0) l1.append(' (over limit)');
       const tb = state.budget - total, ta = tb - a;
-      const l2 = mk('div'); l2.append('Purse ' + inr(tb) + ' → '); const s2 = mk('span', null, inr(ta)); s2.style.color = ta < 0 ? 'var(--warn)' : 'var(--txt)'; l2.append(s2);
+      const l2 = mk('div'); l2.append('Wallet ' + inr(tb) + ' → '); const s2 = mk('span', null, inr(ta)); s2.style.color = ta < 0 ? 'var(--warn)' : 'var(--txt)'; l2.append(s2);
       imp.append(l1, l2);
     } else imp.append(mk('div', null, 'Pick a category'));
   }
@@ -457,7 +457,7 @@ label.f{display:block;font-size:11px;letter-spacing:.12em;text-transform:upperca
     $('note').value = t ? (t.note || '') : '';
     $('date').value = t ? t.date : (isCurrentMonth() ? ymd(new Date()) : ymd(new Date(view.getFullYear(), view.getMonth() + 1, 0)));
     $('add-title').textContent = t ? 'Edit Expense' : 'New Expense';
-    $('save-btn').textContent = t ? 'Save Changes' : 'Drop in the Purse';
+    $('save-btn').textContent = t ? 'Save Changes' : 'Drop in the Wallet';
     $('del-exp').hidden = !t; $('del-exp').textContent = 'Delete this expense';
     $('add-err').textContent = '';
     $('add-scrim').hidden = false; drawAdd();
@@ -551,7 +551,7 @@ label.f{display:block;font-size:11px;letter-spacing:.12em;text-transform:upperca
   $('x-import').addEventListener('click', () => {
     const raw = $('x-in').value.trim().replace(/\s+/g, '');
     if (!raw) { $('x-err').textContent = 'Paste a code first.'; return; }
-    if (!raw.startsWith('EP1:')) { $('x-err').textContent = "That isn't a Purse code. It starts with EP1:"; return; }
+    if (!raw.startsWith('EP1:')) { $('x-err').textContent = "That isn't a Wallet code. It starts with EP1:"; return; }
     let inc; try { inc = JSON.parse(decodeURIComponent(escape(atob(raw.slice(4))))); if (!Array.isArray(inc.tx) || !Array.isArray(inc.cats)) throw 0; } catch (e) { $('x-err').textContent = "Couldn't read that code. Copy the whole thing and try again."; return; }
     let added = 0;
     const ok = mutate(s => {

@@ -1,6 +1,6 @@
 {
-  "name": "Ebony Purse",
-  "short_name": "Purse",
+  "name": "Wallet",
+  "short_name": "Wallet",
   "description": "Your monthly budget, on an ebony desk.",
   "start_url": "./",
   "scope": "./",

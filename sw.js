@@ -1,5 +1,5 @@
 // Keeps the app working offline. Your expenses stay in this device's storage and are never sent anywhere.
-const CACHE = 'ebony-purse-v2';
+const CACHE = 'ebony-wallet-v3';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {

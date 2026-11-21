@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Ebony Purse</title>
+<meta name="theme-color" content="#1f1a17">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Purse">
+<meta name="robots" content="noindex">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+SC:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter+Tight:wght@400;500;600&display=swap">
+<style>
+/* Layout: one column on an ebony desk. Recessed compartments hold numbers, lacquered cards stack like a wallet, silver plates label things, ivory keys take input. */
+:root{
+  --wood:#1f1a17; --grain-a:#161210; --grain-b:#2c2521;
+  --recess:#130f0d; --card-a:#2b2927; --card-b:#1d1b1a;
+  --silver-hi:#e6e8eb; --silver-lo:#9a9fa6; --silver-ink:#1f1a17;
+  --ivory-hi:#fffaf0; --ivory-lo:#e9dcc0; --paper:#f3ead8; --paper-ink:#2a211b;
+  --txt:#eef0f2; --mut:#a8abb0; --line:rgba(230,232,235,.12);
+  --warn:#ff7a52; --ok:#4fd09b;
+  --plate:"Cormorant SC",Georgia,serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  --ui:"Inter Tight",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html,body{height:100%;margin:0}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);overscroll-behavior:none;background:var(--wood)}
+body{background:var(--wood);color:var(--txt);font-family:var(--ui);font-size:15px;-webkit-font-smoothing:antialiased;overscroll-behavior:none}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
+button:focus-visible,input:focus-visible{outline:2px solid var(--silver-hi);outline-offset:2px}
+input{font:inherit;color:var(--txt);background:var(--recess);border:0;border-radius:10px;padding:11px 12px;width:100%;box-shadow:inset 0 2px 6px rgba(0,0,0,.6),0 1px 0 rgba(255,255,255,.06);outline:none;font-size:16px}
+input::placeholder{color:#6e6a66}
+input[type=date]{color-scheme:dark}
+#grain{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.app{position:relative;z-index:1;max-width:460px;margin:0 auto;min-height:100%;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:18px 120px;display:flex;flex-direction:column;gap:14px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.cap{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut)}
+.metal{background:linear-gradient(180deg,var(--silver-hi),var(--silver-lo));color:var(--silver-ink)}
+.plate{font-family:var(--plate);font-weight:700;letter-spacing:.12em;border-radius:3px;box-shadow:0 2px 0 rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.6)}
+.recess{background:var(--recess);border-radius:12px;box-shadow:inset 0 3px 9px rgba(0,0,0,.65),0 1px 0 rgba(255,255,255,.07)}
+.paper{background:var(--paper);color:var(--paper-ink);box-shadow:0 3px 7px rgba(0,0,0,.45)}
+
+/* Header */
+.head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.nav{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--mut)}
+.nav:hover{color:var(--txt)}
+.nav svg{width:18px;height:18px}
+.title-plate{font-size:16px;padding:6px 16px;white-space:nowrap}
+.gear{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--mut)}
+.gear svg{width:19px;height:19px}
+
+/* Balance */
+.bal{padding:14px 15px}
+.bal-row{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+.bal-num{font-family:var(--mono);font-size:34px;font-weight:500;line-height:1.05;letter-spacing:-.01em}
+.bal-side{font-family:var(--mono);font-size:11px;color:var(--mut);text-align:right;line-height:1.5}
+.split{display:flex;height:5px;gap:2px;margin-top:11px}
+.split>div{min-width:0;border-radius:1px}
+
+/* Card stack */
+.stack{position:relative}
+.wcard{position:absolute;left:0;right:0;height:162px;border-radius:13px;padding:12px 15px;overflow:hidden;
+  box-shadow:0 -8px 18px rgba(0,0,0,.5),inset 0 0 0 1px rgba(230,232,235,.14),inset 0 1px 0 rgba(255,255,255,.12);
+  transition:top .28s cubic-bezier(.2,.8,.2,1);text-align:left;width:100%;display:block}
+.wcard::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.06) 48%,transparent 62%);pointer-events:none}
+.wcard .stripe{position:absolute;left:0;top:0;bottom:0;width:3px}
+.wtop{position:relative;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.wname{font-size:12px;padding:2px 9px;max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wleft{font-family:var(--mono);font-size:11px;color:var(--mut)}
+.wbody{position:relative;margin-top:14px}
+.wrow{display:flex;justify-content:space-between;align-items:flex-end;margin-top:11px}
+.wavail{font-family:var(--mono);font-size:22px;font-weight:500}
+.wbar{height:2px;background:rgba(0,0,0,.45);margin-top:9px}
+.wbar>div{height:100%}
+.empty-cards{padding:22px 16px;text-align:center;color:var(--mut);font-size:14px;line-height:1.5}
+
+/* Receipts */
+.section-h{display:flex;justify-content:space-between;align-items:baseline;margin-top:2px}
+.link{font-size:13px;color:var(--mut);text-decoration:underline;text-underline-offset:3px}
+.receipts{display:flex;flex-direction:column;gap:8px}
+.rcpt{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 11px;font-family:var(--mono);font-size:12.5px;text-align:left;width:100%}
+.rcpt .l{display:flex;align-items:center;gap:8px;min-width:0}
+.rcpt .l span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rcpt .dot{width:3px;height:14px;flex:none}
+.rcpt b{font-weight:500;white-space:nowrap}
+.none{color:var(--mut);font-size:13px;text-align:center;padding:10px 0}
+
+/* Ivory keys */
+.ivory{border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--ivory-hi),var(--ivory-lo) 70%);color:var(--paper-ink);
+  box-shadow:0 0 0 3px var(--silver-lo),0 0 0 4px #0c0a09,0 4px 0 4px #0c0a09;display:flex;align-items:center;justify-content:center;transition:transform .06s}
+.ivory:active{transform:translateY(3px);box-shadow:0 0 0 3px var(--silver-lo),0 0 0 4px #0c0a09,0 1px 0 4px #0c0a09}
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:5;display:flex;justify-content:center;pointer-events:none;
+  padding:14px 16px calc(20px + env(safe-area-inset-bottom,0px))}
+.dock .ivory{pointer-events:auto;width:62px;height:62px;font-size:30px;font-weight:400}
+
+/* Sheets */
+.scrim{position:fixed;inset:0;z-index:10;background:rgba(5,4,3,.6);display:flex;align-items:flex-end;justify-content:center}
+.sheet{position:relative;width:100%;max-width:480px;max-height:94%;overflow:auto;border-radius:24px 24px 0 0;background:var(--wood);
+  box-shadow:0 -10px 30px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.08);
+  padding:12px max(16px,env(safe-area-inset-right,0px)) calc(18px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
+  display:flex;flex-direction:column;gap:12px;animation:up .26s cubic-bezier(.2,.9,.3,1)}
+.sheet>*{position:relative}
+.sheet .sgrain{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;border-radius:inherit}
+@keyframes up{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.grab{width:38px;height:4px;border-radius:99px;background:rgba(230,232,235,.25);margin:0 auto 2px}
+.sheet-head{display:flex;justify-content:space-between;align-items:center}
+.x{width:34px;height:34px;display:flex;align-items:center;justify-content:center;color:var(--mut);font-size:22px}
+.amt-box{display:flex;justify-content:space-between;align-items:center;padding:12px 15px}
+.amt-box .cur{font-family:var(--mono);font-size:14px;color:var(--mut)}
+.amt-box .amt{font-family:var(--mono);font-size:38px}
+.cats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.catb{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:9px 10px;border-radius:9px;background:var(--recess);
+  box-shadow:inset 0 2px 6px rgba(0,0,0,.55),0 1px 0 rgba(255,255,255,.06);position:relative;overflow:hidden;text-align:left}
+.catb .stripe{position:absolute;left:0;top:0;bottom:0;width:3px}
+.catb .pl{font-size:12px;padding:1px 7px;filter:saturate(.5) brightness(.8);max-width:70%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.catb .lf{font-family:var(--mono);font-size:11px;color:var(--mut)}
+.catb[aria-pressed="true"]{background:#0a0807;box-shadow:inset 0 3px 8px rgba(0,0,0,.8),0 0 0 1px var(--silver-hi)}
+.catb[aria-pressed="true"] .pl{filter:none}
+.impact{font-family:var(--mono);font-size:11.5px;color:var(--mut);text-align:center;line-height:1.6;min-height:36px}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:12px 0;justify-items:center;padding:4px 0}
+.keypad .ivory{width:52px;height:52px;font-family:var(--mono);font-size:18px;font-weight:500}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.btn-metal{padding:13px;border-radius:10px;font-family:var(--plate);font-weight:700;font-size:17px;letter-spacing:.1em;box-shadow:0 3px 0 #4d5157,inset 0 1px 0 rgba(255,255,255,.6);text-align:center}
+.btn-metal:active{transform:translateY(2px);box-shadow:0 1px 0 #4d5157,inset 0 1px 0 rgba(255,255,255,.6)}
+.btn-ghost{padding:12px;border-radius:10px;font-size:14px;color:var(--txt);box-shadow:inset 0 0 0 1px var(--line);text-align:center}
+.btn-danger{padding:12px;border-radius:10px;font-size:14px;color:var(--warn);box-shadow:inset 0 0 0 1px rgba(255,122,82,.35);text-align:center}
+.err{color:var(--warn);font-size:13px;min-height:16px;text-align:center}
+label.f{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin-bottom:6px}
+
+/* History */
+.day{font-family:var(--mono);font-size:11px;color:var(--mut);letter-spacing:.08em;margin:6px 0 2px}
+
+/* Settings */
+.cat-edit{display:grid;grid-template-columns:28px 1fr 92px 34px;gap:8px;align-items:center}
+.swatch{width:28px;height:28px;border-radius:7px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}
+.del{width:34px;height:34px;border-radius:8px;color:var(--mut);display:flex;align-items:center;justify-content:center;font-size:18px}
+.del[data-armed="1"]{color:var(--warn);box-shadow:inset 0 0 0 1px rgba(255,122,82,.4)}
+.ta{font-family:var(--mono);font-size:11.5px;line-height:1.5;min-height:80px;width:100%;resize:vertical;word-break:break-all;color:var(--txt);background:var(--recess);border:0;border-radius:10px;padding:10px 12px;box-shadow:inset 0 2px 6px rgba(0,0,0,.6)}
+.hist-row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 2px;border-bottom:1px solid var(--line);font-size:13px}
+.hist-row small{color:var(--mut);font-family:var(--mono);font-size:11px}
+.chip{font-size:12.5px;padding:6px 12px;border-radius:99px;box-shadow:inset 0 0 0 1px var(--line)}
+.divider{height:1px;background:var(--line)}
+
+.toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:30;padding:9px 16px;border-radius:99px;font-size:13.5px;transition:opacity .2s;white-space:nowrap}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<svg id="grain" aria-hidden="true" preserveAspectRatio="none"></svg>
+
+<main class="app" id="app">
+  <div class="head">
+    <button class="nav" id="prev" aria-label="Previous month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg></button>
+    <div class="title-plate plate metal" id="month-plate">November Purse</div>
+    <div style="display:flex">
+      <button class="nav" id="next" aria-label="Next month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></button>
+    </div>
+  </div>
+
+  <section class="recess bal" aria-label="Month summary">
+    <div class="bal-row">
+      <div>
+        <div class="cap" id="bal-label">Left to spend</div>
+        <div class="bal-num" id="bal-num">₹0</div>
+      </div>
+      <div class="bal-side" id="bal-side"></div>
+    </div>
+    <div class="split" id="split"></div>
+  </section>
+
+  <div class="stack" id="stack"></div>
+
+  <div class="section-h">
+    <span class="cap">Recent</span>
+    <div style="display:flex;gap:14px">
+      <button class="link" id="all-btn">All expenses</button>
+      <button class="link" id="settings-btn">Settings</button>
+    </div>
+  </div>
+  <div class="receipts" id="receipts"></div>
+</main>
+
+<div class="dock"><button class="ivory" id="add-btn" aria-label="Add expense">+</button></div>
+
+<!-- Add / edit expense -->
+<div class="scrim" id="add-scrim" hidden>
+  <form class="sheet" id="add-sheet" role="dialog" aria-modal="true" aria-labelledby="add-title" autocomplete="off">
+    <div class="grab" aria-hidden="true"></div>
+    <div class="sheet-head">
+      <button type="button" class="x" id="add-close" aria-label="Close">×</button>
+      <div class="plate metal" id="add-title" style="font-size:15px;padding:5px 14px">New Expense</div>
+      <div style="width:34px"></div>
+    </div>
+    <div class="recess amt-box"><span class="cur">₹</span><span class="amt" id="amt">0</span></div>
+    <div class="row2">
+      <div><label class="f" for="note">Note</label><input id="note" placeholder="Zomato, dinner" maxlength="60"></div>
+      <div><label class="f" for="date">Date</label><input id="date" type="date"></div>
+    </div>
+    <div class="cats" id="cat-pick"></div>
+    <div class="impact" id="impact" aria-live="polite"></div>
+    <div class="keypad" id="keypad"></div>
+    <div class="err" id="add-err" role="alert"></div>
+    <button type="submit" class="btn-metal metal" id="save-btn">Drop in the Purse</button>
+    <button type="button" class="btn-danger" id="del-exp" hidden>Delete this expense</button>
+  </form>
+</div>
+
+<!-- All expenses -->
+<div class="scrim" id="all-scrim" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="all-title">
+    <div class="grab" aria-hidden="true"></div>
+    <div class="sheet-head">
+      <button type="button" class="x" id="all-close" aria-label="Close">×</button>
+      <div class="plate metal" id="all-title" style="font-size:15px;padding:5px 14px">All Expenses</div>
+      <div style="width:34px"></div>
+    </div>
+    <div id="all-list"></div>
+  </div>
+</div>
+
+<!-- Settings -->
+<div class="scrim" id="set-scrim" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="set-title">
+    <div class="grab" aria-hidden="true"></div>
+    <div class="sheet-head">
+      <button type="button" class="x" id="set-close" aria-label="Close">×</button>
+      <div class="plate metal" id="set-title" style="font-size:15px;padding:5px 14px">Settings</div>
+      <div style="width:34px"></div>
+    </div>
+    <div><label class="f" for="budget">Monthly budget (₹)</label><input id="budget" type="number" inputmode="numeric" min="0" step="1"></div>
+    <div>
+      <div class="f" style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin-bottom:8px">Categories and monthly limits</div>
+      <div id="cat-edit" style="display:flex;flex-direction:column;gap:8px"></div>
+      <button type="button" class="chip" id="cat-add" style="margin-top:10px">+ Add category</button>
+    </div>
+    <div class="err" id="set-err" role="alert"></div>
+    <button type="button" class="btn-metal metal" id="set-save">Save Settings</button>
+    <div class="divider"></div>
+    <div>
+      <label class="f" for="x-out">Move to another device or back up</label>
+      <p style="margin:0 0 8px;color:var(--mut);font-size:13px;line-height:1.5">Copy this code, send it to yourself, and paste it on your other device. It also works as a backup.</p>
+      <textarea class="ta" id="x-out" readonly></textarea>
+      <button type="button" class="btn-ghost" id="x-copy" style="width:100%;margin-top:8px">Copy code</button>
+    </div>
+    <div>
+      <label class="f" for="x-in">Paste a code from your other device</label>
+      <textarea class="ta" id="x-in" placeholder="EP1:…"></textarea>
+      <div class="err" id="x-err" role="alert"></div>
+      <button type="button" class="btn-ghost" id="x-import" style="width:100%">Add from this code</button>
+    </div>
+    <div class="divider"></div>
+    <div>
+      <div class="f" style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin-bottom:4px">Earlier versions</div>
+      <p style="margin:0 0 6px;color:var(--mut);font-size:13px;line-height:1.5">Your last 30 saves on this device. Restore one if something goes missing.</p>
+      <div id="hist"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast paper" id="toast" hidden></div>
+
+<script>
+(() => {
+  /* ---------- Small helpers ---------- */
+  const $ = id => document.getElementById(id);
+  const mk = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const NS = 'http://www.w3.org/2000/svg';
+  const inr = n => (n < 0 ? '−' : '') + '₹' + Math.abs(Math.round(n)).toLocaleString('en-IN');
+  const pad = n => String(n).padStart(2, '0');
+  const ymd = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  const monthKey = d => d.getFullYear() + '-' + pad(d.getMonth() + 1);
+  const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const uid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
+  const PALETTE = ['#ff7a52', '#8fa2ff', '#4fd09b', '#f2c451', '#e58fd0', '#5fd0e0', '#c9a0ff', '#ff9f6b'];
+  const CARD_SHADES = [['#262422','#191816'],['#2b2927','#1d1b1a'],['#302d2b','#211f1d'],['#36332f','#252220'],['#3b3834','#292623'],['#403c38','#2d2a26']];
+
+  let toastT;
+  function toast(msg) { const t = $('toast'); t.textContent = msg; t.hidden = false; t.style.opacity = 1; clearTimeout(toastT); toastT = setTimeout(() => { t.style.opacity = 0; setTimeout(() => t.hidden = true, 200); }, 1800); }
+  function copyText(text, label) {
+    const fallback = () => { const ta = document.createElement('textarea'); ta.value = text; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0'; document.body.appendChild(ta); ta.select(); let ok = false; try { ok = document.execCommand('copy'); } catch (e) {} ta.remove(); toast(ok ? label + ' copied' : 'Copy blocked. Select the text and copy it by hand.'); };
+    try { navigator.clipboard.writeText(text).then(() => toast(label + ' copied'), fallback); } catch (e) { fallback(); }
+  }
+
+  /* ---------- Ebony grain ---------- */
+  function drawGrain(svg, w, h) {
+    svg.setAttribute('viewBox', `0 0 ${w} ${h}`); svg.replaceChildren();
+    const lines = Math.ceil(w / 4) + 4;
+    for (let k = 0; k < lines; k++) {
+      let d = ''; const x0 = k * 4 + Math.sin(k) * 2;
+      for (let y = 0; y <= h; y += 8) { const x = x0 + Math.sin(y / 70 + k * .4) * 3 + Math.sin(y / 19 + k) * .8; d += (y ? 'L' : 'M') + x.toFixed(1) + ' ' + y; }
+      const p = document.createElementNS(NS, 'path');
+      p.setAttribute('d', d); p.setAttribute('fill', 'none'); p.setAttribute('stroke', k % 3 ? '#161210' : '#2c2521');
+      p.setAttribute('stroke-width', k % 5 ? .7 : 1.4); p.setAttribute('opacity', .7); svg.appendChild(p);
+    }
+  }
+  drawGrain($('grain'), 420, 900);
+  document.querySelectorAll('.sheet').forEach(s => { const g = document.createElementNS(NS, 'svg'); g.setAttribute('class', 'sgrain'); g.setAttribute('preserveAspectRatio', 'none'); g.setAttribute('aria-hidden', 'true'); drawGrain(g, 420, 700); s.prepend(g); });
+
+  /* ---------- Storage ---------- */
+  const LS = 'ebony-purse-v1', HK = 'ebony-purse-history';
+  const DEFAULT = () => ({ v: 1, budget: 3000, cats: [
+    { id: 'food', name: 'Food', limit: 900, color: PALETTE[0] },
+    { id: 'games', name: 'Games', limit: 500, color: PALETTE[1] },
+    { id: 'shopping', name: 'Shopping', limit: 800, color: PALETTE[2] },
+    { id: 'travel', name: 'Travel', limit: 500, color: PALETTE[3] }], tx: [], updated: 0 });
+  function readStore() { try { const s = localStorage.getItem(LS); const d = s ? JSON.parse(s) : null; return d && Array.isArray(d.cats) && Array.isArray(d.tx) ? d : null; } catch (e) { return null; } }
+  function readHistory() { try { const h = JSON.parse(localStorage.getItem(HK) || '[]'); return Array.isArray(h) ? h : []; } catch (e) { return []; } }
+  function pushHistory(doc) { if (!doc) return; const h = readHistory().filter(x => x.updated !== doc.updated); h.unshift(doc); try { localStorage.setItem(HK, JSON.stringify(h.slice(0, 30))); } catch (e) {} }
+  let state = readStore() || DEFAULT();
+  // Every change: re-read the newest saved copy (another window may have saved), apply the change, keep the old copy as a backup, save.
+  function mutate(fn, opts = {}) {
+    const latest = readStore() || state;
+    const next = JSON.parse(JSON.stringify(latest));
+    fn(next);
+    if (!opts.allowShrink && next.tx.length < latest.tx.length) { toast("Couldn't save. Nothing was changed."); return false; }
+    next.updated = Date.now();
+    try { pushHistory(readStore()); localStorage.setItem(LS, JSON.stringify(next)); }
+    catch (e) { toast("Couldn't save on this device. Free up some storage."); return false; }
+    state = next; render(); return true;
+  }
+  addEventListener('storage', e => { if (e.key === LS) { const s = readStore(); if (s) { state = s; render(); } } });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) { const s = readStore(); if (s && s.updated !== state.updated) { state = s; render(); } } });
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {}); } catch (e) {}
+
+  /* ---------- Month math ---------- */
+  let view = new Date(); view.setDate(1);
+  const isCurrentMonth = () => monthKey(view) === monthKey(new Date());
+  const monthTx = () => state.tx.filter(t => t.date.slice(0, 7) === monthKey(view));
+  const catById = id => state.cats.find(c => c.id === id);
+  function spentBy(list) { const m = {}; for (const t of list) m[t.cat] = (m[t.cat] || 0) + t.amt; return m; }
+  function daysLeft() {
+    const now = new Date(); const last = new Date(view.getFullYear(), view.getMonth() + 1, 0).getDate();
+    if (isCurrentMonth()) return last - now.getDate() + 1;
+    return view < now ? 0 : last;
+  }
+
+  /* ---------- Home ---------- */
+  let frontId = null;
+  const chipSvg = `<svg width="28" height="21" viewBox="0 0 30 23" aria-hidden="true"><defs><linearGradient id="chipg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e6e8eb"/><stop offset="1" stop-color="#9a9fa6"/></linearGradient></defs><rect x=".5" y=".5" width="29" height="22" rx="4" fill="url(#chipg)"/><path d="M10 .5v22M20 .5v22M.5 8h9.5M20 8h9.5M.5 15h9.5M20 15h9.5M10 11.5h10" stroke="#1f1a17" stroke-opacity=".45" stroke-width=".5" fill="none"/></svg>`;
+  function render() {
+    $('month-plate').textContent = MONTHS[view.getMonth()] + ' Purse' + (view.getFullYear() !== new Date().getFullYear() ? ' ' + view.getFullYear() : '');
+    const list = monthTx(), spent = spentBy(list), total = list.reduce((a, t) => a + t.amt, 0), left = state.budget - total, dl = daysLeft();
+    $('bal-label').textContent = left < 0 ? 'Over budget by' : 'Left to spend';
+    $('bal-num').textContent = inr(Math.abs(left)); $('bal-num').style.color = left < 0 ? 'var(--warn)' : '';
+    $('bal-side').innerHTML = '';
+    $('bal-side').append(mk('div', null, 'of ' + inr(state.budget)), mk('div', null, dl > 0 && left > 0 ? inr(left / dl) + ' / day' : dl > 0 ? dl + ' days left' : 'month ended'));
+    const split = $('split'); split.replaceChildren();
+    for (const c of state.cats) { const v = spent[c.id] || 0; if (v > 0) { const d = mk('div'); d.style.flex = v; d.style.background = c.color; split.append(d); } }
+    const other = Object.keys(spent).filter(k => !catById(k)).reduce((a, k) => a + spent[k], 0);
+    if (other > 0) { const d = mk('div'); d.style.flex = other; d.style.background = '#6e6a66'; split.append(d); }
+    if (left > 0) { const d = mk('div'); d.style.flex = left; d.style.background = 'rgba(0,0,0,.45)'; split.append(d); }
+
+    // Card stack: the chosen card sits in front.
+    const stack = $('stack'); stack.replaceChildren();
+    if (!state.cats.length) { stack.style.height = 'auto'; stack.append(mk('div', 'recess empty-cards', 'Add a category in Settings to start sorting your spending.')); }
+    else {
+      if (!catById(frontId)) frontId = state.cats[state.cats.length - 1].id;
+      const order = state.cats.filter(c => c.id !== frontId).concat(catById(frontId));
+      const STEP = 36; stack.style.height = ((order.length - 1) * STEP + 162) + 'px';
+      order.forEach((c, i) => {
+        const front = c.id === frontId, v = spent[c.id] || 0, l = c.limit - v, pct = c.limit ? Math.min(100, Math.round(v / c.limit * 100)) : 0;
+        const [a, b] = CARD_SHADES[Math.min(i, CARD_SHADES.length - 1)];
+        const card = mk('button', 'wcard'); card.type = 'button'; card.style.top = (i * STEP) + 'px'; card.style.background = `linear-gradient(140deg,${a},${b})`;
+        card.setAttribute('aria-label', `${c.name}: ${inr(l)} left of ${inr(c.limit)}`);
+        const stripe = mk('div', 'stripe'); stripe.style.background = c.color;
+        const top = mk('div', 'wtop'); top.append(mk('span', 'wname plate metal', c.name));
+        const lt = mk('span', 'wleft', l < 0 ? 'over ' + inr(-l) : inr(l) + ' left'); if (l < 0) lt.style.color = 'var(--warn)'; top.append(lt);
+        card.append(stripe, top);
+        if (front) {
+          const body = mk('div', 'wbody'); body.innerHTML = chipSvg;
+          const row = mk('div', 'wrow');
+          const lhs = mk('div'); lhs.append(mk('div', 'cap', 'Available')); const av = mk('div', 'wavail', inr(Math.max(0, l)) + '.00'); lhs.append(av);
+          const rhs = mk('div', 'wleft'); rhs.style.textAlign = 'right'; rhs.append(mk('div', null, pct + '% used'), mk('div', null, 'of ' + inr(c.limit)));
+          row.append(lhs, rhs);
+          const bar = mk('div', 'wbar'); const fill = mk('div'); fill.style.width = pct + '%'; fill.style.background = pct >= 100 ? 'var(--warn)' : c.color; bar.append(fill);
+          body.append(row, bar); card.append(body);
+        }
+        card.addEventListener('click', () => { if (front) openAdd(null, c.id); else { frontId = c.id; render(); } });
+        stack.append(card);
+      });
+    }
+
+    // Recent receipts
+    const rc = $('receipts'); rc.replaceChildren();
+    const recent = list.slice().sort((a, b) => b.date.localeCompare(a.date) || b.ts - a.ts).slice(0, 4);
+    if (!recent.length) rc.append(mk('div', 'none', isCurrentMonth() ? 'No spending yet this month. Tap + to add your first expense.' : 'No expenses in this month.'));
+    recent.forEach((t, i) => rc.append(receipt(t, i)));
+  }
+  function receipt(t, i) {
+    const c = catById(t.cat);
+    const b = mk('button', 'rcpt paper'); b.type = 'button'; b.style.transform = `rotate(${[-1, .7, -.5, .9][i % 4]}deg)`;
+    const l = mk('span', 'l'); const dot = mk('span', 'dot'); dot.style.background = c ? c.color : '#6e6a66';
+    const d = new Date(t.date + 'T00:00'); l.append(dot, mk('span', null, d.getDate() + ' ' + MONTHS[d.getMonth()].slice(0, 3).toUpperCase() + ' · ' + (t.note || (c ? c.name : 'Other'))));
+    b.append(l, mk('b', null, '−' + t.amt.toLocaleString('en-IN')));
+    b.addEventListener('click', () => openAdd(t));
+    return b;
+  }
+  $('prev').addEventListener('click', () => { view = new Date(view.getFullYear(), view.getMonth() - 1, 1); render(); });
+  $('next').addEventListener('click', () => { view = new Date(view.getFullYear(), view.getMonth() + 1, 1); render(); });
+
+  /* ---------- Add / edit expense ---------- */
+  let amt = '', pickCat = null, editing = null, delArmed = false, delT;
+  ['1','2','3','4','5','6','7','8','9','00','0','del'].forEach(k => {
+    const b = mk('button', 'ivory'); b.type = 'button'; b.textContent = k === 'del' ? '←' : k;
+    b.setAttribute('aria-label', k === 'del' ? 'Delete last digit' : k);
+    b.addEventListener('click', () => press(k)); $('keypad').append(b);
+  });
+  function press(k) {
+    if (k === 'del') amt = amt.slice(0, -1);
+    else if (amt.length < 7) amt = (amt + k).replace(/^0+/, '');
+    $('add-err').textContent = ''; drawAdd();
+  }
+  addEventListener('keydown', e => {
+    if ($('add-scrim').hidden || document.activeElement === $('note') || document.activeElement === $('date')) return;
+    if (/^[0-9]$/.test(e.key)) press(e.key); else if (e.key === 'Backspace') press('del');
+  });
+  function drawAdd() {
+    const a = parseInt(amt || '0', 10);
+    $('amt').textContent = a.toLocaleString('en-IN');
+    const date = $('date').value || ymd(new Date());
+    const list = state.tx.filter(t => t.date.slice(0, 7) === date.slice(0, 7) && (!editing || t.id !== editing.id));
+    const spent = spentBy(list), total = list.reduce((s, t) => s + t.amt, 0);
+    const box = $('cat-pick'); box.replaceChildren();
+    for (const c of state.cats) {
+      const b = mk('button', 'catb'); b.type = 'button'; b.setAttribute('aria-pressed', String(c.id === pickCat));
+      const s = mk('span', 'stripe'); s.style.background = c.color;
+      b.append(s, mk('span', 'pl plate metal', c.name), mk('span', 'lf', inr(c.limit - (spent[c.id] || 0))));
+      b.addEventListener('click', () => { pickCat = c.id; $('add-err').textContent = ''; drawAdd(); });
+      box.append(b);
+    }
+    const imp = $('impact'); imp.replaceChildren();
+    const c = catById(pickCat);
+    if (c) {
+      const before = c.limit - (spent[c.id] || 0), after = before - a;
+      const l1 = mk('div'); l1.append(c.name + ' ' + inr(before) + ' → '); const s1 = mk('span', null, inr(after)); s1.style.color = after < 0 ? 'var(--warn)' : 'var(--txt)'; l1.append(s1); if (after < 0) l1.append(' (over limit)');
+      const tb = state.budget - total, ta = tb - a;
+      const l2 = mk('div'); l2.append('Purse ' + inr(tb) + ' → '); const s2 = mk('span', null, inr(ta)); s2.style.color = ta < 0 ? 'var(--warn)' : 'var(--txt)'; l2.append(s2);
+      imp.append(l1, l2);
+    } else imp.append(mk('div', null, 'Pick a category'));
+  }
+  function openAdd(t, catId) {
+    editing = t || null; delArmed = false; clearTimeout(delT);
+    amt = t ? String(t.amt) : '';
+    pickCat = t ? t.cat : (catId || (state.cats.find(c => c.id === frontId) || state.cats[0] || {}).id || null);
+    $('note').value = t ? (t.note || '') : '';
+    $('date').value = t ? t.date : (isCurrentMonth() ? ymd(new Date()) : ymd(new Date(view.getFullYear(), view.getMonth() + 1, 0)));
+    $('add-title').textContent = t ? 'Edit Expense' : 'New Expense';
+    $('save-btn').textContent = t ? 'Save Changes' : 'Drop in the Purse';
+    $('del-exp').hidden = !t; $('del-exp').textContent = 'Delete this expense';
+    $('add-err').textContent = '';
+    $('add-scrim').hidden = false; drawAdd();
+  }
+  function closeAdd() { $('add-scrim').hidden = true; editing = null; }
+  $('add-btn').addEventListener('click', () => openAdd(null));
+  $('add-close').addEventListener('click', closeAdd);
+  $('add-scrim').addEventListener('click', e => { if (e.target === $('add-scrim')) closeAdd(); });
+  $('date').addEventListener('change', drawAdd);
+  $('add-sheet').addEventListener('submit', e => {
+    e.preventDefault();
+    const a = parseInt(amt || '0', 10);
+    if (!a) { $('add-err').textContent = 'Type an amount first.'; return; }
+    if (!catById(pickCat)) { $('add-err').textContent = 'Pick a category.'; return; }
+    const date = $('date').value || ymd(new Date());
+    const rec = { id: editing ? editing.id : uid(), amt: a, cat: pickCat, note: $('note').value.trim(), date, ts: editing ? editing.ts : Date.now() };
+    const wasEdit = !!editing;
+    if (mutate(s => { const i = s.tx.findIndex(x => x.id === rec.id); if (i >= 0) s.tx[i] = rec; else s.tx.push(rec); })) {
+      frontId = pickCat; closeAdd();
+      if (date.slice(0, 7) !== monthKey(view)) { view = new Date(+date.slice(0, 4), +date.slice(5, 7) - 1, 1); render(); }
+      toast(wasEdit ? 'Changes saved' : inr(a) + ' added to ' + catById(pickCat).name);
+    }
+  });
+  $('del-exp').addEventListener('click', () => {
+    if (!editing) return;
+    if (!delArmed) { delArmed = true; $('del-exp').textContent = 'Tap again to delete'; delT = setTimeout(() => { delArmed = false; $('del-exp').textContent = 'Delete this expense'; }, 3500); return; }
+    const id = editing.id;
+    if (mutate(s => { s.tx = s.tx.filter(x => x.id !== id); }, { allowShrink: true })) { closeAdd(); renderAll(); toast('Expense deleted'); }
+  });
+
+  /* ---------- All expenses ---------- */
+  function renderAll() {
+    const box = $('all-list'); box.replaceChildren();
+    const list = monthTx().sort((a, b) => b.date.localeCompare(a.date) || b.ts - a.ts);
+    const head = mk('div', 'cap', MONTHS[view.getMonth()] + ' ' + view.getFullYear() + ' · ' + list.length + (list.length === 1 ? ' expense' : ' expenses'));
+    box.append(head);
+    if (!list.length) { box.append(mk('div', 'none', 'Nothing logged in this month.')); return; }
+    let day = null, wrap;
+    list.forEach((t, i) => {
+      if (t.date !== day) { day = t.date; const d = new Date(t.date + 'T00:00'); box.append(mk('div', 'day', d.getDate() + ' ' + MONTHS[d.getMonth()].toUpperCase())); wrap = mk('div', 'receipts'); box.append(wrap); }
+      wrap.append(receipt(t, i));
+    });
+  }
+  $('all-btn').addEventListener('click', () => { renderAll(); $('all-scrim').hidden = false; });
+  $('all-close').addEventListener('click', () => $('all-scrim').hidden = true);
+  $('all-scrim').addEventListener('click', e => { if (e.target === $('all-scrim')) $('all-scrim').hidden = true; });
+
+  /* ---------- Settings ---------- */
+  let draft = null;
+  function openSettings() {
+    draft = JSON.parse(JSON.stringify({ budget: state.budget, cats: state.cats }));
+    $('budget').value = draft.budget; $('set-err').textContent = '';
+    drawCats();
+    $('x-out').value = 'EP1:' + btoa(unescape(encodeURIComponent(JSON.stringify(state))));
+    $('x-in').value = ''; $('x-err').textContent = '';
+    drawHistory();
+    $('set-scrim').hidden = false;
+  }
+  function drawCats() {
+    const box = $('cat-edit'); box.replaceChildren();
+    draft.cats.forEach((c, i) => {
+      const row = mk('div', 'cat-edit');
+      const sw = mk('button', 'swatch'); sw.type = 'button'; sw.style.background = c.color; sw.setAttribute('aria-label', 'Change color for ' + (c.name || 'category'));
+      sw.addEventListener('click', () => { c.color = PALETTE[(PALETTE.indexOf(c.color) + 1) % PALETTE.length]; sw.style.background = c.color; });
+      const nm = mk('input'); nm.value = c.name; nm.placeholder = 'Name'; nm.maxLength = 18; nm.setAttribute('aria-label', 'Category name'); nm.addEventListener('input', () => c.name = nm.value);
+      const lim = mk('input'); lim.type = 'number'; lim.inputMode = 'numeric'; lim.min = '0'; lim.value = c.limit; lim.setAttribute('aria-label', 'Monthly limit for ' + (c.name || 'category')); lim.addEventListener('input', () => c.limit = lim.value);
+      const del = mk('button', 'del', '×'); del.type = 'button'; del.setAttribute('aria-label', 'Remove ' + (c.name || 'category'));
+      del.addEventListener('click', () => {
+        if (del.dataset.armed !== '1') { del.dataset.armed = '1'; del.textContent = '✓'; setTimeout(() => { if (del.isConnected) { del.dataset.armed = ''; del.textContent = '×'; } }, 3000); return; }
+        draft.cats.splice(i, 1); drawCats();
+      });
+      row.append(sw, nm, lim, del); box.append(row);
+    });
+  }
+  $('cat-add').addEventListener('click', () => {
+    const used = draft.cats.map(c => c.color);
+    draft.cats.push({ id: uid(), name: '', limit: 300, color: PALETTE.find(p => !used.includes(p)) || PALETTE[draft.cats.length % PALETTE.length] });
+    drawCats(); const ins = $('cat-edit').querySelectorAll('input'); ins[ins.length - 2].focus();
+  });
+  $('set-save').addEventListener('click', () => {
+    const b = parseInt($('budget').value, 10);
+    if (!(b >= 0)) { $('set-err').textContent = 'Enter a monthly budget.'; return; }
+    for (const c of draft.cats) { c.name = (c.name || '').trim(); c.limit = parseInt(c.limit, 10); if (!c.name) { $('set-err').textContent = 'Every category needs a name.'; return; } if (!(c.limit >= 0)) { $('set-err').textContent = 'Every category needs a limit.'; return; } }
+    if (mutate(s => { s.budget = b; s.cats = draft.cats; })) { $('set-scrim').hidden = true; toast('Settings saved'); }
+  });
+  $('settings-btn').addEventListener('click', openSettings);
+  $('set-close').addEventListener('click', () => $('set-scrim').hidden = true);
+  $('set-scrim').addEventListener('click', e => { if (e.target === $('set-scrim')) $('set-scrim').hidden = true; });
+  $('x-copy').addEventListener('click', () => copyText($('x-out').value, 'Code'));
+  $('x-in').addEventListener('input', () => $('x-err').textContent = '');
+  $('x-import').addEventListener('click', () => {
+    const raw = $('x-in').value.trim().replace(/\s+/g, '');
+    if (!raw) { $('x-err').textContent = 'Paste a code first.'; return; }
+    if (!raw.startsWith('EP1:')) { $('x-err').textContent = "That isn't a Purse code. It starts with EP1:"; return; }
+    let inc; try { inc = JSON.parse(decodeURIComponent(escape(atob(raw.slice(4))))); if (!Array.isArray(inc.tx) || !Array.isArray(inc.cats)) throw 0; } catch (e) { $('x-err').textContent = "Couldn't read that code. Copy the whole thing and try again."; return; }
+    let added = 0;
+    const ok = mutate(s => {
+      const ids = new Set(s.tx.map(t => t.id));
+      for (const t of inc.tx) if (!ids.has(t.id)) { s.tx.push(t); added++; }
+      const cids = new Set(s.cats.map(c => c.id));
+      for (const c of inc.cats) if (!cids.has(c.id)) s.cats.push(c);
+      if ((inc.updated || 0) > (s.updated || 0)) s.budget = inc.budget;
+    });
+    if (ok) { $('set-scrim').hidden = true; toast(added ? 'Added ' + added + (added === 1 ? ' expense' : ' expenses') : 'Already up to date'); }
+  });
+  function drawHistory() {
+    const box = $('hist'); box.replaceChildren();
+    const h = readHistory();
+    if (!h.length) { box.append(mk('div', 'none', 'Nothing yet. Each save keeps the version before it.')); return; }
+    let armed = null;
+    h.forEach(doc => {
+      const row = mk('div', 'hist-row');
+      const when = new Date(doc.updated || 0);
+      const info = mk('div'); info.append(mk('div', null, when.toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) + ', ' + when.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })));
+      info.append(mk('small', null, doc.tx.length + (doc.tx.length === 1 ? ' expense' : ' expenses') + ' · budget ' + inr(doc.budget)));
+      const btn = mk('button', 'chip', 'Restore'); btn.type = 'button';
+      btn.addEventListener('click', () => {
+        if (armed !== btn) { if (armed) armed.textContent = 'Restore'; armed = btn; btn.textContent = 'Tap again'; return; }
+        if (mutate(s => { s.budget = doc.budget; s.cats = doc.cats; s.tx = doc.tx; }, { allowShrink: true })) { $('set-scrim').hidden = true; toast('Restored'); }
+      });
+      row.append(info, btn); box.append(row);
+    });
+  }
+  addEventListener('keydown', e => { if (e.key !== 'Escape') return; for (const id of ['add-scrim', 'all-scrim', 'set-scrim']) if (!$(id).hidden) { $(id).hidden = true; editing = null; } });
+
+  render();
+  if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+})();
+</script>
+</body>
+</html>
